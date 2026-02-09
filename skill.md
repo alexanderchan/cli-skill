@@ -1,12 +1,6 @@
 ---
 name: cli
-description: Generate modern CLI tools using TypeScript or Go with best practices for LLM-assisted development
-triggers:
-  - "create a cli"
-  - "build a cli tool"
-  - "build a command-line tool"
-  - "make a cli"
-  - "generate cli"
+description: Generate modern CLI tools using TypeScript (Node.js or Bun) or Go with best practices for LLM-assisted development. Use this skill when the user wants to create a CLI tool, build a command-line application, make a terminal utility, or set up CLI tooling. Helps with stack selection (Node.js/Bun/Go), build configuration, safety patterns (confirmations, dry-run), and distribution setup. Triggers on "create a cli", "build a cli tool", "make a command-line tool", or when CLI development is requested.
 ---
 
 # Modern CLI Development Best Practices
