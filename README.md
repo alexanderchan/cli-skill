@@ -14,11 +14,7 @@ This skill helps you build production-ready CLI tools with:
 ## Installation
 
 ```bash
-# Install from GitHub
-/install-skill alexanderchan/cli-skill
-
-# Or manually: copy to your Claude skills directory
-cp -r cli-skill ~/.claude/skills/
+npx skills add alexanderchan/cli-skill
 ```
 
 ## Usage
@@ -76,7 +72,7 @@ This skill is based on the blog post: [Modern CLI Tips for LLMs](https://alexmch
 
 ## Contributing
 
-Suggestions and improvements welcome! Open an issue or PR at [repository URL].
+Suggestions and improvements welcome! Open an issue or PR at [https://github.com/alexanderchan/cli-skill](https://github.com/alexanderchan/cli-skill).
 
 ## License
 
