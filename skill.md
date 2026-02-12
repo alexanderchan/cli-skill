@@ -166,25 +166,124 @@ my-cli/
 ```
 
 **Build Tools:**
-- **tsup** - Fast TypeScript bundler (recommended for CLIs)
-- **esbuild** - Alternative fast bundler
-- **pkg** - Package as standalone executables (optional)
 
-**package.json scripts:**
+There are three main approaches for building TypeScript CLIs:
+
+**Option 1: esbuild** (simple, single file)
+- Fast and simple for single CLI tools
+- Manual setup for multiple entry points
+- Good for straightforward projects
+
 ```json
 {
   "bin": {
-    "my-cli": "./bin/cli.js"
+    "my-cli": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts",
-    "dev": "tsup src/index.ts --watch",
-    "prepublishOnly": "npm run build"
+    "build": "esbuild --bundle --platform=node --target=node22 src/cli.ts --outfile=dist/cli.js"
   }
 }
 ```
 
-### TypeScript CLI with Bun (Standalone Executable)
+For multiple CLIs with esbuild:
+```json
+{
+  "bin": {
+    "my-cli": "./dist/my-cli.js",
+    "another-cli": "./dist/another-cli.js"
+  },
+  "scripts": {
+    "build": "npm run build:my-cli && npm run build:another-cli",
+    "build:my-cli": "esbuild --bundle --platform=node --target=node22 src/cli/my-cli.ts --outfile=dist/my-cli.js",
+    "build:another-cli": "esbuild --bundle --platform=node --target=node22 src/cli/another-cli.ts --outfile=dist/another-cli.js"
+  }
+}
+```
+
+**Option 2: tsdown** (multiple CLIs, better DX)
+- Config-based approach for multiple entry points
+- Cleaner than esbuild for complex builds
+- Built-in watch mode
+
+Install: `npm install -D tsdown`
+
+Create `tsdown.config.js`:
+```js
+import { defineConfig } from "tsdown";
+
+export default defineConfig({
+  entry: [
+    "./src/cli/my-cli.ts",
+    "./src/cli/another-cli.ts",
+  ],
+  format: "commonjs",
+});
+```
+
+Update `package.json`:
+```json
+{
+  "bin": {
+    "my-cli": "./dist/my-cli.js",
+    "another-cli": "./dist/another-cli.js"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch"
+  },
+  "files": ["dist"]
+}
+```
+
+**Option 3: bun build** (fast, modern)
+- Extremely fast (10-20x faster than esbuild)
+- Simple glob patterns for multiple CLIs
+- Built-in minification
+- Can create standalone executables with `--compile`
+
+For a single CLI:
+```json
+{
+  "bin": {
+    "my-cli": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "bun build --compile --target=node --outfile=dist/cli.js src/cli.ts"
+  }
+}
+```
+
+For multiple CLIs:
+```json
+{
+  "bin": {
+    "my-cli": "./dist/my-cli.js",
+    "another-cli": "./dist/another-cli.js"
+  },
+  "scripts": {
+    "build": "bun build --target=node --outdir=dist src/cli/*.ts"
+  }
+}
+```
+
+Creating standalone executables (no Node.js required):
+```bash
+# Build a completely standalone binary with Bun runtime embedded
+bun build --compile --target=bun src/cli.ts --outfile=my-cli
+
+# Now distribute the single binary - no runtime needed!
+./my-cli
+```
+
+**When to use which bundler:**
+- **esbuild**: Simple single CLI, minimal configuration
+- **tsdown**: Multiple CLIs with better developer experience
+- **bun build**: Want fastest build times or standalone executables
+
+### TypeScript CLI with Bun (Fast & Flexible)
+
+Bun offers two approaches: bundling for Node.js or creating standalone executables.
+
 ```
 my-cli/
 ├── package.json           # Dependencies (Bun compatible)
@@ -197,11 +296,26 @@ my-cli/
 │   ├── commands/          # Individual command implementations
 │   ├── config.ts          # Configuration management
 │   └── utils/             # Shared utilities
-├── build/                 # Compiled binaries
+├── dist/                  # Bundled output for Node.js
+├── build/                 # Compiled standalone binaries (optional)
 └── README.md
 ```
 
-**Build with Bun:**
+**Approach 1: Bundle for Node.js** (requires Node.js runtime)
+```json
+{
+  "bin": {
+    "my-cli": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "bun build --target=node --outfile=dist/cli.js src/index.ts",
+    "build:multiple": "bun build --target=node --outdir=dist src/cli/*.ts",
+    "dev": "bun run src/index.ts"
+  }
+}
+```
+
+**Approach 2: Standalone executables** (no runtime required)
 ```json
 {
   "scripts": {
@@ -216,11 +330,20 @@ my-cli/
 ```
 
 **Key Bun advantages:**
-- No separate bundler needed - Bun has it built-in
-- Fast compilation to standalone executables
-- TypeScript works out of the box
-- Compatible with most npm packages
-- Smaller learning curve than Go for JS/TS developers
+- **Extremely fast** - 10-20x faster than esbuild
+- **Simple glob patterns** - `src/cli/*.ts` automatically creates multiple outputs
+- **Built-in minification** - `--minify` flag for smaller bundles
+- **Two distribution modes** - Bundle for Node.js or compile to standalone executable
+- **No separate bundler needed** - Bun has it built-in
+- **TypeScript out of the box** - No configuration required
+- **Compatible with most npm packages** - Works with @commander-js, @clack/prompts, etc.
+- **Smaller learning curve than Go** - For JS/TS developers
+
+**When to use bun build:**
+- You want the fastest build times
+- You're building standalone executables for easy distribution
+- You want simple configuration with good defaults
+- Your project already uses bun as the runtime
 
 ### Go CLI (Full Setup)
 ```

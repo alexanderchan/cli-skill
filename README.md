@@ -1,15 +1,15 @@
 # Modern CLI Builder Skill
 
-A Claude Code skill for generating modern command-line tools using TypeScript or Go, based on current best practices for LLM-assisted development.
+A Claude Code skill for generating modern command-line tools using TypeScript (Node.js or Bun) or Go, based on current best practices for LLM-assisted development.
 
 ## What This Skill Does
 
 This skill helps you build production-ready CLI tools with:
-- ✨ Modern tech stacks (TypeScript + commander.js/clack or Go + Bubble Tea)
+- ✨ Modern tech stacks (TypeScript with Node.js/Bun or Go + Bubble Tea)
 - 🛡️ Safety-first patterns (confirmations, --yes flags, validation)
 - 🎨 Beautiful interactive prompts
 - ⚙️ Proper configuration management
-- 📦 Distribution best practices
+- 📦 Distribution best practices (npm packages or standalone binaries)
 
 ## Installation
 
@@ -55,16 +55,24 @@ The skill will guide Claude to:
 
 ## Tech Stacks Supported
 
-### TypeScript
+### TypeScript with Node.js
 - @commander-js/extra-typings (command parsing)
 - @clack/prompts (interactive prompts)
 - zx (shell commands)
+- Build tools: esbuild, tsdown, or bun build
+
+### TypeScript with Bun
+- Same libraries as Node.js (@commander-js/extra-typings, @clack/prompts, zx)
+- Built-in bundler (no separate tool needed)
+- Standalone executables with `--compile`
+- 10-20x faster builds than esbuild
 
 ### Go
 - Bubble Tea (TUI framework)
 - Lip Gloss (styling)
 - Huh (forms)
 - modernc.org/sqlite (database)
+- GoReleaser (cross-platform releases)
 
 ## Based On
 
